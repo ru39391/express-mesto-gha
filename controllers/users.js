@@ -1,5 +1,7 @@
 const User = require('../models/user');
-const { errMessageNotFound, NOT_FOUND_ERROR_CODE, VALIDATION_ERROR_CODE, BAD_REQUEST_ERROR_CODE } = require('../utils/constants');
+const {
+  errMessageNotFound, NOT_FOUND_ERROR_CODE, VALIDATION_ERROR_CODE, BAD_REQUEST_ERROR_CODE,
+} = require('../utils/constants');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
