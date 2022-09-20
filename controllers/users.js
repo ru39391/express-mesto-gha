@@ -34,7 +34,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message })
+        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message });
       }
       return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
     });
@@ -47,7 +47,7 @@ module.exports.updateUser = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message })
+        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message });
       }
       return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
     });
@@ -60,7 +60,7 @@ module.exports.updateUserPic = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message })
+        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message });
       }
       return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
     });
