@@ -3,7 +3,7 @@ const {errMessageNotFound, NOT_FOUND_ERROR_CODE, VALIDATION_ERROR_CODE, BAD_REQU
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then(users => res.send({ data: users }))
+    .then(users => res.send(users))
     .catch(err => res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message }));
 };
 
@@ -13,7 +13,7 @@ module.exports.getUser = (req, res) => {
       if(!user) {
         return res.status(NOT_FOUND_ERROR_CODE).send({ message: errMessageNotFound.user });
       }
-      return res.send({ data: user })
+      return res.send(user)
     })
     .catch(err => res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message }));
 };
@@ -22,7 +22,7 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then(user => res.send({ data: user }))
+    .then(user => res.send(user))
     .catch(err => {
       if (err.name === 'ValidationError') {
         return res.status(VALIDATION_ERROR_CODE).send({ message: err.message })
@@ -35,7 +35,7 @@ module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .then(user => res.send({ data: user }))
+    .then(user => res.send(user))
     .catch(err => {
       if (err.name === 'ValidationError') {
         return res.status(VALIDATION_ERROR_CODE).send({ message: err.message })
@@ -48,7 +48,7 @@ module.exports.updateUserPic = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .then(user => res.send({ data: user }))
+    .then(user => res.send(user))
     .catch(err => {
       if (err.name === 'ValidationError') {
         return res.status(VALIDATION_ERROR_CODE).send({ message: err.message })
