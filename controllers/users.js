@@ -1,15 +1,21 @@
 const User = require('../models/user');
+const {errMessageNotFound, NOT_FOUND_ERROR_CODE, VALIDATION_ERROR_CODE, BAD_REQUEST_ERROR_CODE} = require('../utils/constants');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then(users => res.send({ data: users }))
-    .catch(err => res.status(500).send({ message: err.message }));
+    .catch(err => res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message }));
 };
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
-    .then(user => res.send({ data: user }))
-    .catch(err => res.status(500).send({ message: err.message }));
+    .then(user => {
+      if(!user) {
+        return res.status(NOT_FOUND_ERROR_CODE).send({ message: errMessageNotFound.user });
+      }
+      return res.send({ data: user })
+    })
+    .catch(err => res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message }));
 };
 
 module.exports.createUser = (req, res) => {
@@ -17,21 +23,36 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(500).send({ message: err.message }));
+    .catch(err => {
+      if (err.name === 'ValidationError') {
+        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message })
+      }
+      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+    });
 };
 
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(500).send({ message: err.message }));
+    .catch(err => {
+      if (err.name === 'ValidationError') {
+        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message })
+      }
+      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+    });
 };
 
 module.exports.updateUserPic = (req, res) => {
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(500).send({ message: err.message }));
+    .catch(err => {
+      if (err.name === 'ValidationError') {
+        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message })
+      }
+      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+    });
 };
