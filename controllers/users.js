@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const {
+  actionMessages,
   errMessageNotFound, NOT_FOUND_ERROR_CODE, VALIDATION_ERROR_CODE, BAD_REQUEST_ERROR_CODE,
 } = require('../utils/constants');
 
@@ -17,7 +18,12 @@ module.exports.getUser = (req, res) => {
       }
       return res.send(user);
     })
-    .catch((err) => res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(VALIDATION_ERROR_CODE).send({ message: actionMessages.errorId });
+      }
+      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+    });
 };
 
 module.exports.createUser = (req, res) => {

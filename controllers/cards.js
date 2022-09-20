@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 const {
+  actionMessages,
   errMessageNotFound, NOT_FOUND_ERROR_CODE, VALIDATION_ERROR_CODE, BAD_REQUEST_ERROR_CODE,
 } = require('../utils/constants');
 
@@ -17,7 +18,7 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message })
+        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message });
       }
       return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
     });
@@ -29,9 +30,14 @@ module.exports.removeCard = (req, res) => {
       if (!card) {
         return res.status(NOT_FOUND_ERROR_CODE).send({ message: errMessageNotFound.card });
       }
-      return res.send({ message: 'Карточка удалена' });
+      return res.send({ message: actionMessages.successRemoved });
     })
-    .catch((err) => res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(VALIDATION_ERROR_CODE).send({ message: actionMessages.errorId });
+      }
+      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+    });
 };
 
 module.exports.likeCard = (req, res) => {
@@ -42,7 +48,12 @@ module.exports.likeCard = (req, res) => {
       }
       return res.send(card);
     })
-    .catch((err) => res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(VALIDATION_ERROR_CODE).send({ message: actionMessages.errorId });
+      }
+      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -53,5 +64,10 @@ module.exports.dislikeCard = (req, res) => {
       }
       return res.send(card);
     })
-    .catch((err) => res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(VALIDATION_ERROR_CODE).send({ message: actionMessages.errorId });
+      }
+      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+    });
 };
