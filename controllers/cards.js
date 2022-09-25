@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 const Card = require('../models/card');
 const ValidationError = require('../errors/validation-err');
 const NotFoundError = require('../errors/not-found-err');

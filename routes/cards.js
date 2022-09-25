@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 const router = require('express').Router();
 const {
   getCards, createCard, removeCard, likeCard, dislikeCard,

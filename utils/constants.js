@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 const NOT_FOUND_ERROR_CODE = 404;
 const VALIDATION_ERROR_CODE = 400;
 const BAD_REQUEST_ERROR_CODE = 500;
