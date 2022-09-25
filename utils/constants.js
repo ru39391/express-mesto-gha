@@ -12,6 +12,7 @@ const errMessageNotFound = {
 const actionMessages = {
   successRemoved: 'Карточка удалена',
   errorId: 'Некорректный формат ID объекта',
+  errorRequest: 'На сервере произошла ошибка'
 };
 
 module.exports = {

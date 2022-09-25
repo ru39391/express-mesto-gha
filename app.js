@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -28,5 +27,7 @@ app.use('*', (req, res, next) => {
   res.status(NOT_FOUND_ERROR_CODE).send({ message: errMessageNotFound.request });
   next();
 });
+
+app.use(require('./middlewares/errorHandler'));
 
 app.listen(PORT);
