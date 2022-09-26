@@ -1,9 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const {
-  errMessageNotFound, NOT_FOUND_ERROR_CODE,
-} = require('./utils/constants');
+const NotFoundError = require('./errors/not-found-err');
+const { createUser, login } = require('./controllers/users');
+const { errMessageNotFound } = require('./utils/constants');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -23,10 +23,10 @@ app.use((req, res, next) => {
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
-app.use('*', (req, res, next) => {
-  res.status(NOT_FOUND_ERROR_CODE).send({ message: errMessageNotFound.request });
-  next();
-});
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use('*', (req, res, next) => next(new NotFoundError(errMessageNotFound.request)));
 
 app.use(require('./middlewares/errorHandler'));
 

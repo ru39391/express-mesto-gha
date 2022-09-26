@@ -1,5 +1,6 @@
-const NOT_FOUND_ERROR_CODE = 404;
 const VALIDATION_ERROR_CODE = 400;
+const AUTH_ERROR_CODE = 401;
+const NOT_FOUND_ERROR_CODE = 404;
 const BAD_REQUEST_ERROR_CODE = 500;
 
 const errMessageNotFound = {
@@ -10,14 +11,17 @@ const errMessageNotFound = {
 
 const actionMessages = {
   successRemoved: 'Карточка удалена',
+  successAuth: 'Авторизация прошла успешно',
   errorId: 'Некорректный формат ID объекта',
-  errorRequest: 'На сервере произошла ошибка'
+  errorRequest: 'На сервере произошла ошибка',
+  errorAuth: 'Неправильные почта или пароль',
 };
 
 module.exports = {
   actionMessages,
   errMessageNotFound,
-  NOT_FOUND_ERROR_CODE,
   VALIDATION_ERROR_CODE,
+  AUTH_ERROR_CODE,
+  NOT_FOUND_ERROR_CODE,
   BAD_REQUEST_ERROR_CODE,
 };
