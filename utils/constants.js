@@ -16,6 +16,7 @@ const actionMessages = {
   errorId: 'Некорректный формат ID объекта',
   errorRequest: 'На сервере произошла ошибка',
   errorAuth: 'Неправильные почта или пароль',
+  errorLogin: 'Необходима авторизация',
   errorUser: 'Пользователь с таким e-mail уже существует',
 };
 

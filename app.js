@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const NotFoundError = require('./errors/not-found-err');
+const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
 const { errMessageNotFound } = require('./utils/constants');
 
@@ -20,11 +21,12 @@ app.use((req, res, next) => {
   };
   next();
 });
-app.use('/', require('./routes/users'));
-app.use('/', require('./routes/cards'));
 
 app.post('/signin', login);
 app.post('/signup', createUser);
+
+app.use('/users', auth, require('./routes/users'));
+app.use('/cards', auth, require('./routes/cards'));
 
 app.use('*', (req, res, next) => next(new NotFoundError(errMessageNotFound.request)));
 
