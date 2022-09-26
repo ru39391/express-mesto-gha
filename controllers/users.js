@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const validator = require('validator');
 const User = require('../models/user');
 const ValidationError = require('../errors/validation-err');
 const NotFoundError = require('../errors/not-found-err');
@@ -13,7 +14,8 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.userId)
+  const userId = req.params.userId === 'me' ? req.user._id : req.params.userId;
+  User.findById(userId)
     .then((user) => {
       if (!user) {
         return next(new NotFoundError(errMessageNotFound.user));

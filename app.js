@@ -15,13 +15,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '63287249a0c59df553ba36d0',
-  };
-  next();
-});
-
 app.post('/signin', login);
 app.post('/signup', createUser);
 
@@ -32,4 +25,7 @@ app.use('*', (req, res, next) => next(new NotFoundError(errMessageNotFound.reque
 
 app.use(require('./middlewares/errorHandler'));
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  const str = '63318ef61086a99df563b412';
+  //console.log(str.length);
+});
