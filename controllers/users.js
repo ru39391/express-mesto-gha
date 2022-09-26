@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const ValidationError = require('../errors/validation-err');
 const NotFoundError = require('../errors/not-found-err');
+const ConflictError = require('../errors/conflict-err');
 const { actionMessages, errMessageNotFound } = require('../utils/constants');
 
 module.exports.getUsers = (req, res, next) => {
@@ -28,15 +29,24 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  bcrypt.hash(req.body.password, 10)
-    .then((hash) => User.create({ email: req.body.email, password: hash }))
+  const { email, password, name, about, avatar } = req.body;
+
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      email: email,
+      password: hash,
+      name: name,
+      about: about,
+      avatar: avatar,
+    }))
     .then((user) => res.send({ _id: user._id, email: user.email }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        console.log(err);
         return next(new ValidationError(err.message));
       }
-      //if (err.code === 11000) { }
+      if (err.code === 11000) {
+        return next(new ConflictError(actionMessages.errorUser));
+      }
       return next(err);
     });
 };
