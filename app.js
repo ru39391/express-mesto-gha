@@ -25,7 +25,4 @@ app.use('*', (req, res, next) => next(new NotFoundError(errMessageNotFound.reque
 
 app.use(require('./middlewares/errorHandler'));
 
-app.listen(PORT, () => {
-  const str = '63318ef61086a99df563b412';
-  //console.log(str.length);
-});
+app.listen(PORT);
