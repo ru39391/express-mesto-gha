@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const ValidationError = require('../errors/validation-err');
 const NotFoundError = require('../errors/not-found-err');
+const AccessError = require('../errors/access-err');
 const { actionMessages, errMessageNotFound } = require('../utils/constants');
 
 module.exports.getCards = (req, res, next) => {
@@ -25,13 +26,23 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.removeCard = (req, res, next) => {
   const { _id } = req.user;
+  const { cardId } = req.params;
 
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
         return next(new NotFoundError(errMessageNotFound.card));
       }
-      return res.send({ message: actionMessages.successRemoved });
+      switch (_id === JSON.stringify(card.owner).split('"')[1]) {
+        case true:
+          Card.findOneAndRemove({ owner: _id, id: cardId })
+            .then(() => res.send({ message: actionMessages.successCardRemoved }))
+            .catch((err) => next(err));
+          break;
+        case false:
+          return next(new AccessError(actionMessages.errorCardAccess));
+          break;
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
