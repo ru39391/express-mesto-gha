@@ -43,6 +43,7 @@ module.exports.createUser = (req, res, next) => {
       avatar,
     }))
     .then((user) => {
+      // eslint-disable-next-line no-shadow
       const { name, about, avatar } = user;
       return res.send({
         email,
@@ -97,7 +98,7 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign(
         { _id: user._id },
         'some-secret-key',
-        { expiresIn: '7d' }
+        { expiresIn: '7d' },
       );
       return res.send({ token });
     })
