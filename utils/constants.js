@@ -30,6 +30,7 @@ const actionMessages = {
   errorCardAccess: 'Невозможно удалить карточку: недостаточно прав для совершения операции',
 };
 
+// eslint-disable-next-line no-useless-escape
 const patterUrl = /^(https?:\/\/)([w\.]{4})?([a-z0-9\.\-]{3,})([a-z]+)([\Wa-z0-9]+)#?/;
 
 module.exports = {
