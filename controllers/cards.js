@@ -1,7 +1,7 @@
-/* eslint-disable linebreak-style */
 const Card = require('../models/card');
 const ValidationError = require('../errors/validation-err');
 const NotFoundError = require('../errors/not-found-err');
+const AccessError = require('../errors/access-err');
 const { actionMessages, errMessageNotFound } = require('../utils/constants');
 
 module.exports.getCards = (req, res, next) => {
@@ -25,12 +25,25 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.removeCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  const { _id } = req.user;
+  const { cardId } = req.params;
+
+  Card.findById(cardId)
+    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
         return next(new NotFoundError(errMessageNotFound.card));
       }
-      return res.send({ message: actionMessages.successRemoved });
+      // eslint-disable-next-line default-case
+      switch (_id === JSON.stringify(card.owner).split('"')[1]) {
+        case true:
+          Card.findOneAndRemove({ owner: _id, id: cardId })
+            .then(() => res.send({ message: actionMessages.successCardRemoved }))
+            .catch((err) => next(err));
+          break;
+        case false:
+          return next(new AccessError(actionMessages.errorCardAccess));
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {

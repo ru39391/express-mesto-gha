@@ -1,6 +1,8 @@
-/* eslint-disable linebreak-style */
-const NOT_FOUND_ERROR_CODE = 404;
 const VALIDATION_ERROR_CODE = 400;
+const AUTH_ERROR_CODE = 401;
+const ACCESS_ERROR_CODE = 403;
+const NOT_FOUND_ERROR_CODE = 404;
+const CONFLICT_ERROR_CODE = 409;
 const BAD_REQUEST_ERROR_CODE = 500;
 
 const errMessageNotFound = {
@@ -9,16 +11,37 @@ const errMessageNotFound = {
   request: 'Такого ресурса не существует',
 };
 
-const actionMessages = {
-  successRemoved: 'Карточка удалена',
-  errorId: 'Некорректный формат ID объекта',
-  errorRequest: 'На сервере произошла ошибка'
+const errMessageValidation = {
+  required: 'Это поле обязательно для заполнения',
+  min: 'Введено значение меньше минимально допустимого',
+  max: 'Введено значение больше максимально допустимого',
+  email: 'Указан некорректный e-mail',
+  url: 'Указана некорректная ссылка',
 };
 
+const actionMessages = {
+  successCardRemoved: 'Карточка удалена',
+  successAuth: 'Авторизация прошла успешно',
+  errorId: 'Некорректный формат ID объекта',
+  errorRequest: 'На сервере произошла ошибка',
+  errorAuth: 'Неправильные почта или пароль',
+  errorLogin: 'Необходима авторизация',
+  errorUser: 'Пользователь с таким e-mail уже существует',
+  errorCardAccess: 'Невозможно удалить карточку: недостаточно прав для совершения операции',
+};
+
+// eslint-disable-next-line no-useless-escape
+const patterUrl = /^(https?:\/\/)([w\.]{4})?([a-z0-9\.\-]{3,})([a-z]+)([\Wa-z0-9]+)#?/;
+
 module.exports = {
+  patterUrl,
   actionMessages,
   errMessageNotFound,
-  NOT_FOUND_ERROR_CODE,
+  errMessageValidation,
   VALIDATION_ERROR_CODE,
+  AUTH_ERROR_CODE,
+  ACCESS_ERROR_CODE,
+  NOT_FOUND_ERROR_CODE,
+  CONFLICT_ERROR_CODE,
   BAD_REQUEST_ERROR_CODE,
 };

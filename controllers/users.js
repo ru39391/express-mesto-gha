@@ -1,7 +1,9 @@
-/* eslint-disable linebreak-style */
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const ValidationError = require('../errors/validation-err');
 const NotFoundError = require('../errors/not-found-err');
+const ConflictError = require('../errors/conflict-err');
 const { actionMessages, errMessageNotFound } = require('../utils/constants');
 
 module.exports.getUsers = (req, res, next) => {
@@ -11,7 +13,8 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.userId)
+  const userId = req.params.userId === 'me' ? req.user._id : req.params.userId;
+  User.findById(userId)
     .then((user) => {
       if (!user) {
         return next(new NotFoundError(errMessageNotFound.user));
@@ -27,13 +30,36 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
+  const {
+    email, password, name, about, avatar,
+  } = req.body;
 
-  User.create({ name, about, avatar })
-    .then((user) => res.send(user))
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      email,
+      password: hash,
+      name,
+      about,
+      avatar,
+    }))
+    .then((user) => {
+      const {
+        // eslint-disable-next-line no-shadow
+        email, name, about, avatar,
+      } = user;
+      return res.send({
+        email,
+        name,
+        about,
+        avatar,
+      });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new ValidationError(err.message));
+      }
+      if (err.code === 11000) {
+        return next(new ConflictError(actionMessages.errorUser));
       }
       return next(err);
     });
@@ -63,4 +89,19 @@ module.exports.updateUserPic = (req, res, next) => {
       }
       return next(err);
     });
+};
+
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        'some-secret-key',
+        { expiresIn: '7d' },
+      );
+      return res.send({ token });
+    })
+    .catch((err) => next(err));
 };
