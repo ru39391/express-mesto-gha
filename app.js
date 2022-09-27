@@ -5,7 +5,7 @@ const { celebrate, Joi } = require('celebrate');
 const NotFoundError = require('./errors/not-found-err');
 const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
-const { errMessageNotFound } = require('./utils/constants');
+const { errMessageNotFound, patterUrl } = require('./utils/constants');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -28,7 +28,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required().min(8),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/^(https?:\/\/)([w\.]{4})?([a-z0-9\.\-]{3,})([a-z]+)([\Wa-z0-9]+)#?/),
+    avatar: Joi.string().pattern(patterUrl),
   }),
 }), createUser);
 
