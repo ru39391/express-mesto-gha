@@ -43,8 +43,10 @@ module.exports.createUser = (req, res, next) => {
       avatar,
     }))
     .then((user) => {
-      // eslint-disable-next-line no-shadow
-      const { name, about, avatar } = user;
+      const {
+        // eslint-disable-next-line no-shadow
+        email, password, name, about, avatar,
+      } = user;
       return res.send({
         email,
         password,
