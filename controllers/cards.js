@@ -1,17 +1,16 @@
-/* eslint-disable linebreak-style */
 const Card = require('../models/card');
-const {
-  actionMessages,
-  errMessageNotFound, NOT_FOUND_ERROR_CODE, VALIDATION_ERROR_CODE, BAD_REQUEST_ERROR_CODE,
-} = require('../utils/constants');
+const ValidationError = require('../errors/validation-err');
+const NotFoundError = require('../errors/not-found-err');
+const AccessError = require('../errors/access-err');
+const { actionMessages, errMessageNotFound } = require('../utils/constants');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message }));
+    .catch((err) => next(err));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const owner = req.user._id;
   const { name, link } = req.body;
 
@@ -19,56 +18,69 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(VALIDATION_ERROR_CODE).send({ message: err.message });
+        return next(new ValidationError(err.message));
       }
-      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+      return next(err);
     });
 };
 
-module.exports.removeCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+module.exports.removeCard = (req, res, next) => {
+  const { _id } = req.user;
+  const { cardId } = req.params;
+
+  Card.findById(cardId)
+    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND_ERROR_CODE).send({ message: errMessageNotFound.card });
+        return next(new NotFoundError(errMessageNotFound.card));
       }
-      return res.send({ message: actionMessages.successRemoved });
+      // eslint-disable-next-line default-case
+      switch (_id === JSON.stringify(card.owner).split('"')[1]) {
+        case true:
+          Card.findOneAndRemove({ owner: _id, id: cardId })
+            .then(() => res.send({ message: actionMessages.successCardRemoved }))
+            .catch((err) => next(err));
+          break;
+        case false:
+          return next(new AccessError(actionMessages.errorCardAccess));
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(VALIDATION_ERROR_CODE).send({ message: actionMessages.errorId });
+        return next(new ValidationError(actionMessages.errorId));
       }
-      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+      return next(err);
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND_ERROR_CODE).send({ message: errMessageNotFound.card });
+        return next(new NotFoundError(errMessageNotFound.card));
       }
       return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(VALIDATION_ERROR_CODE).send({ message: actionMessages.errorId });
+        return next(new ValidationError(actionMessages.errorId));
       }
-      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+      return next(err);
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND_ERROR_CODE).send({ message: errMessageNotFound.card });
+        return next(new NotFoundError(errMessageNotFound.card));
       }
       return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(VALIDATION_ERROR_CODE).send({ message: actionMessages.errorId });
+        return next(new ValidationError(actionMessages.errorId));
       }
-      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
+      return next(err);
     });
 };
