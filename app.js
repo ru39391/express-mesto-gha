@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, errors, Joi } = require('celebrate');
 const NotFoundError = require('./errors/not-found-err');
 const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
@@ -37,6 +37,7 @@ app.use('/cards', auth, require('./routes/cards'));
 
 app.use('*', (req, res, next) => next(new NotFoundError(errMessageNotFound.request)));
 
+app.use(errors());
 app.use(require('./middlewares/errorHandler'));
 
 app.listen(PORT);
