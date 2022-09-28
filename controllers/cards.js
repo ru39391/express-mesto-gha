@@ -38,7 +38,7 @@ module.exports.removeCard = (req, res, next) => {
       switch (_id === JSON.stringify(card.owner).split('"')[1]) {
         case true:
           Card.findOneAndRemove({ owner: _id, id: cardId })
-            .then((card) => res.send({ message: actionMessages.successCardRemoved }))
+            .then(() => res.send({ message: actionMessages.successCardRemoved }))
             .catch((err) => next(err));
           break;
         case false:
