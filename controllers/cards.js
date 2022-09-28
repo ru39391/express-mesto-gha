@@ -37,12 +37,15 @@ module.exports.removeCard = (req, res, next) => {
       // eslint-disable-next-line default-case
       switch (_id === JSON.stringify(card.owner).split('"')[1]) {
         case true:
-          return Card.findOneAndRemove({ owner: _id, id: cardId });
+          Card.findOneAndRemove({ owner: _id, id: cardId })
+            .then((card) => res.send({ message: actionMessages.successCardRemoved }))
+            .catch((err) => next(err));
+          break;
         case false:
           return next(new AccessError(actionMessages.errorCardAccess));
       }
     })
-    .then(() => res.send({ message: actionMessages.successCardRemoved }))
+    // eslint-disable-next-line no-unused-vars
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new ValidationError(actionMessages.errorId));

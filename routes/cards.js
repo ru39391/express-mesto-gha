@@ -7,7 +7,7 @@ const {
 
 const cardIdValidationConfig = {
   params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24, 'hex'),
+    cardId: Joi.string().hex().length(24),
   }),
 };
 
