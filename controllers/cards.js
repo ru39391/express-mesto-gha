@@ -45,6 +45,7 @@ module.exports.removeCard = (req, res, next) => {
           return next(new AccessError(actionMessages.errorCardAccess));
       }
     })
+    // eslint-disable-next-line no-unused-vars
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new ValidationError(actionMessages.errorId));
